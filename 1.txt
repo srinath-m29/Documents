@@ -1,0 +1,17 @@
+clc;
+clear;
+close all;
+
+t = -10:0.01:10;
+
+u1 = double(t >= 5);
+u2 = double(t <= 2);
+u3 = double(t >= 0);
+
+x = 4*u1 + 3*u2 + 4*u3;
+
+plot(t, x, 'LineWidth', 2);
+grid on;
+xlabel('Time (t)');
+ylabel('x(t)');
+title('x(t) = 4u(t-5) + 3u(-t+2) + u(6t)');
