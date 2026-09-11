@@ -1,0 +1,106 @@
+SIGNALS AND SYSTEMS - MATLAB PROGRAMS
+Programs 3 to 6
+
+------------------------------------------------------------
+3. Plot A(t) = sin(t) - cos(t)
+------------------------------------------------------------
+
+clc;
+clear;
+close all;
+
+t = 0:0.01:2*pi;
+
+A = sin(t) - cos(t);
+
+plot(t, A, 'LineWidth', 2);
+grid on;
+xlabel('Time (t)');
+ylabel('A(t)');
+title('A(t) = sin(t) - cos(t)');
+
+
+------------------------------------------------------------
+4. Plot the given Fourier Series representation
+------------------------------------------------------------
+
+Note:
+The expression shown in the question contains tan(x) and the
+integral limit pi/2. Since tan(x) becomes infinite at pi/2,
+a small cutoff is used for numerical evaluation.
+
+clc;
+clear;
+close all;
+
+N = 20;
+x = 0:0.001:pi/2-0.001;
+
+f = zeros(size(x));
+
+for n = 1:N
+    fun = @(z) tan(z).*sin(2*n*z/pi);
+    an = (4/pi)*integral(fun, 0, pi/2-0.001);
+
+    f = f + an*sin(2*n*x/pi);
+end
+
+plot(x, f, 'LineWidth', 2);
+grid on;
+xlabel('x');
+ylabel('f(x)');
+title('Fourier Series Representation');
+
+
+------------------------------------------------------------
+5. Plot the given Fourier Series representation
+
+f(x) = pi^2/3 + sum from n=1 to infinity of
+       [4(-1)^n/n^2] cos(nx)
+------------------------------------------------------------
+
+clc;
+clear;
+close all;
+
+x = -pi:0.001:pi;
+N = 20;
+
+f = pi^2/3;
+
+for n = 1:N
+    f = f + (4*(-1)^n/n^2)*cos(n*x);
+end
+
+plot(x, f, 'LineWidth', 2);
+grid on;
+xlabel('x');
+ylabel('f(x)');
+title('Fourier Series');
+
+
+------------------------------------------------------------
+6. Plot the given Fourier Series representation
+
+f(x) = 1 + sum from n=1 to infinity of
+       [2(-1)^n/n] sin(nx)
+------------------------------------------------------------
+
+clc;
+clear;
+close all;
+
+x = -pi:0.001:pi;
+N = 50;
+
+f = ones(size(x));
+
+for n = 1:N
+    f = f + (2*(-1)^n/n)*sin(n*x);
+end
+
+plot(x, f, 'LineWidth', 2);
+grid on;
+xlabel('x');
+ylabel('f(x)');
+title('Fourier Series Representation');
