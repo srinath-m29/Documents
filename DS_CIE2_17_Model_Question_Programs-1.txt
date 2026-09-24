@@ -1,0 +1,1703 @@
+DATA STRUCTURES – CIE 2
+17 MODEL QUESTION PROGRAMS
+
+============================================================
+QUESTION 1
+Construct a binary tree using 50, 30, 70, 20, 40, 60, 80.
+Implement preorder, inorder and postorder traversals.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+void preorder(struct Node *root) {
+    if (root) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+void postorder(struct Node *root) {
+    if (root) {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+
+int main() {
+    struct Node *root = create(50);
+
+    root->left = create(30);
+    root->right = create(70);
+    root->left->left = create(20);
+    root->left->right = create(40);
+    root->right->left = create(60);
+    root->right->right = create(80);
+
+    printf("Preorder: ");
+    preorder(root);
+    printf("\nInorder: ");
+    inorder(root);
+    printf("\nPostorder: ");
+    postorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 2
+Create a binary tree using dynamic memory allocation.
+Insert 25, 15, 35, 10, 20, 30, 40 and display all traversals.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+void preorder(struct Node *root) {
+    if (root) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+void postorder(struct Node *root) {
+    if (root) {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+
+int main() {
+    struct Node *root = create(25);
+
+    root->left = create(15);
+    root->right = create(35);
+    root->left->left = create(10);
+    root->left->right = create(20);
+    root->right->left = create(30);
+    root->right->right = create(40);
+
+    printf("Preorder: ");
+    preorder(root);
+    printf("\nInorder: ");
+    inorder(root);
+    printf("\nPostorder: ");
+    postorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 3
+Implement a BST using 45, 25, 65, 15, 35, 55, 75.
+Implement insertion and search. Search for 35 and 60.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+
+    return root;
+}
+
+struct Node* search(struct Node *root, int key) {
+    if (!root || root->data == key)
+        return root;
+
+    if (key < root->data)
+        return search(root->left, key);
+
+    return search(root->right, key);
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    int a[] = {45, 25, 65, 15, 35, 55, 75};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 7; i++)
+        root = insert(root, a[i]);
+
+    printf("Inorder: ");
+    inorder(root);
+
+    printf("\n35: %s", search(root, 35) ? "Found" : "Not Found");
+    printf("\n60: %s", search(root, 60) ? "Found" : "Not Found");
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 4
+Implement a BST using 50, 30, 70, 20, 40, 60, 80.
+Delete 20, 30 and 50. Display inorder after each deletion.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else
+        root->right = insert(root->right, data);
+
+    return root;
+}
+
+struct Node* minNode(struct Node *root) {
+    while (root->left)
+        root = root->left;
+    return root;
+}
+
+struct Node* deleteNode(struct Node *root, int key) {
+    if (!root)
+        return NULL;
+
+    if (key < root->data)
+        root->left = deleteNode(root->left, key);
+    else if (key > root->data)
+        root->right = deleteNode(root->right, key);
+    else {
+        if (!root->left) {
+            struct Node *t = root->right;
+            free(root);
+            return t;
+        }
+
+        if (!root->right) {
+            struct Node *t = root->left;
+            free(root);
+            return t;
+        }
+
+        struct Node *t = minNode(root->right);
+        root->data = t->data;
+        root->right = deleteNode(root->right, t->data);
+    }
+
+    return root;
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    int a[] = {50, 30, 70, 20, 40, 60, 80};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 7; i++)
+        root = insert(root, a[i]);
+
+    root = deleteNode(root, 20);
+    printf("After deleting 20: ");
+    inorder(root);
+
+    root = deleteNode(root, 30);
+    printf("\nAfter deleting 30: ");
+    inorder(root);
+
+    root = deleteNode(root, 50);
+    printf("\nAfter deleting 50: ");
+    inorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 5
+Implement an AVL tree and insert 30, 20, 10, 25, 28, 27.
+Calculate balance factor and perform rotations.
+Display final inorder traversal.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data, height;
+    struct Node *left, *right;
+};
+
+int height(struct Node *n) {
+    return n ? n->height : 0;
+}
+
+int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->height = 1;
+    n->left = n->right = NULL;
+    return n;
+}
+
+int balance(struct Node *n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+struct Node* rightRotate(struct Node *y) {
+    struct Node *x = y->left;
+    struct Node *t = x->right;
+
+    x->right = y;
+    y->left = t;
+
+    y->height = 1 + max(height(y->left), height(y->right));
+    x->height = 1 + max(height(x->left), height(x->right));
+
+    return x;
+}
+
+struct Node* leftRotate(struct Node *x) {
+    struct Node *y = x->right;
+    struct Node *t = y->left;
+
+    y->left = x;
+    x->right = t;
+
+    x->height = 1 + max(height(x->left), height(x->right));
+    y->height = 1 + max(height(y->left), height(y->right));
+
+    return y;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+    else
+        return root;
+
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int b = balance(root);
+
+    if (b > 1 && data < root->left->data)
+        return rightRotate(root);
+
+    if (b < -1 && data > root->right->data)
+        return leftRotate(root);
+
+    if (b > 1 && data > root->left->data) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && data < root->right->data) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    int a[] = {30, 20, 10, 25, 28, 27};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 6; i++)
+        root = insert(root, a[i]);
+
+    printf("Inorder: ");
+    inorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 6
+Implement an AVL tree using 40, 20, 60, 10, 30, 50, 70, 25, 35.
+Implement insertion and search. Display inorder and height.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data, height;
+    struct Node *left, *right;
+};
+
+int height(struct Node *n) {
+    return n ? n->height : 0;
+}
+
+int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->height = 1;
+    n->left = n->right = NULL;
+    return n;
+}
+
+int balance(struct Node *n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+struct Node* rightRotate(struct Node *y) {
+    struct Node *x = y->left;
+    struct Node *t = x->right;
+
+    x->right = y;
+    y->left = t;
+
+    y->height = 1 + max(height(y->left), height(y->right));
+    x->height = 1 + max(height(x->left), height(x->right));
+
+    return x;
+}
+
+struct Node* leftRotate(struct Node *x) {
+    struct Node *y = x->right;
+    struct Node *t = y->left;
+
+    y->left = x;
+    x->right = t;
+
+    x->height = 1 + max(height(x->left), height(x->right));
+    y->height = 1 + max(height(y->left), height(y->right));
+
+    return y;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+    else
+        return root;
+
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int b = balance(root);
+
+    if (b > 1 && data < root->left->data)
+        return rightRotate(root);
+
+    if (b < -1 && data > root->right->data)
+        return leftRotate(root);
+
+    if (b > 1 && data > root->left->data) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && data < root->right->data) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+struct Node* search(struct Node *root, int key) {
+    if (!root || root->data == key)
+        return root;
+
+    if (key < root->data)
+        return search(root->left, key);
+
+    return search(root->right, key);
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    int a[] = {40,20,60,10,30,50,70,25,35};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 9; i++)
+        root = insert(root, a[i]);
+
+    printf("Inorder: ");
+    inorder(root);
+
+    printf("\nHeight: %d", height(root));
+    printf("\n30: %s", search(root, 30) ? "Found" : "Not Found");
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 7
+Implement a B-Tree of minimum degree 2.
+Insert 10, 20, 5, 6, 12, 30, 7, 17.
+Implement node splitting and display final B-Tree.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define T 2
+
+struct Node {
+    int key[3];
+    struct Node *child[4];
+    int n, leaf;
+};
+
+struct Node* create(int leaf) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->n = 0;
+    n->leaf = leaf;
+    return n;
+}
+
+void traverse(struct Node *root) {
+    int i;
+
+    for (i = 0; i < root->n; i++) {
+        if (!root->leaf)
+            traverse(root->child[i]);
+        printf("%d ", root->key[i]);
+    }
+
+    if (!root->leaf)
+        traverse(root->child[i]);
+}
+
+void split(struct Node *parent, int pos) {
+    struct Node *full = parent->child[pos];
+    struct Node *right = create(full->leaf);
+
+    right->n = 1;
+    right->key[0] = full->key[2];
+
+    if (!full->leaf) {
+        right->child[0] = full->child[2];
+        right->child[1] = full->child[3];
+    }
+
+    full->n = 1;
+
+    for (int i = parent->n; i >= pos + 1; i--)
+        parent->child[i + 1] = parent->child[i];
+
+    parent->child[pos + 1] = right;
+
+    for (int i = parent->n - 1; i >= pos; i--)
+        parent->key[i + 1] = parent->key[i];
+
+    parent->key[pos] = full->key[1];
+    parent->n++;
+}
+
+void insertNonFull(struct Node *root, int key) {
+    int i = root->n - 1;
+
+    if (root->leaf) {
+        while (i >= 0 && key < root->key[i]) {
+            root->key[i + 1] = root->key[i];
+            i--;
+        }
+
+        root->key[i + 1] = key;
+        root->n++;
+    } else {
+        while (i >= 0 && key < root->key[i])
+            i--;
+
+        i++;
+
+        if (root->child[i]->n == 3) {
+            split(root, i);
+
+            if (key > root->key[i])
+                i++;
+        }
+
+        insertNonFull(root->child[i], key);
+    }
+}
+
+void insert(struct Node **root, int key) {
+    struct Node *r = *root;
+
+    if (r->n == 3) {
+        struct Node *newRoot = create(0);
+        newRoot->child[0] = r;
+
+        split(newRoot, 0);
+
+        int i = key > newRoot->key[0];
+        insertNonFull(newRoot->child[i], key);
+
+        *root = newRoot;
+    } else {
+        insertNonFull(r, key);
+    }
+}
+
+int main() {
+    int a[] = {10,20,5,6,12,30,7,17};
+    struct Node *root = create(1);
+
+    for (int i = 0; i < 8; i++)
+        insert(&root, a[i]);
+
+    printf("B-Tree: ");
+    traverse(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 8
+Implement a B-Tree of minimum degree 2.
+Insert 15, 8, 25, 5, 12, 20, 30, 10.
+Search for 12 and 18.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define T 2
+
+struct Node {
+    int key[3];
+    struct Node *child[4];
+    int n, leaf;
+};
+
+struct Node* create(int leaf) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->n = 0;
+    n->leaf = leaf;
+    return n;
+}
+
+void traverse(struct Node *root) {
+    int i;
+
+    for (i = 0; i < root->n; i++) {
+        if (!root->leaf)
+            traverse(root->child[i]);
+        printf("%d ", root->key[i]);
+    }
+
+    if (!root->leaf)
+        traverse(root->child[i]);
+}
+
+void split(struct Node *parent, int pos) {
+    struct Node *full = parent->child[pos];
+    struct Node *right = create(full->leaf);
+
+    right->n = 1;
+    right->key[0] = full->key[2];
+
+    if (!full->leaf) {
+        right->child[0] = full->child[2];
+        right->child[1] = full->child[3];
+    }
+
+    full->n = 1;
+
+    for (int i = parent->n; i >= pos + 1; i--)
+        parent->child[i + 1] = parent->child[i];
+
+    parent->child[pos + 1] = right;
+
+    for (int i = parent->n - 1; i >= pos; i--)
+        parent->key[i + 1] = parent->key[i];
+
+    parent->key[pos] = full->key[1];
+    parent->n++;
+}
+
+void insertNonFull(struct Node *root, int key) {
+    int i = root->n - 1;
+
+    if (root->leaf) {
+        while (i >= 0 && key < root->key[i]) {
+            root->key[i + 1] = root->key[i];
+            i--;
+        }
+
+        root->key[i + 1] = key;
+        root->n++;
+    } else {
+        while (i >= 0 && key < root->key[i])
+            i--;
+
+        i++;
+
+        if (root->child[i]->n == 3) {
+            split(root, i);
+
+            if (key > root->key[i])
+                i++;
+        }
+
+        insertNonFull(root->child[i], key);
+    }
+}
+
+void insert(struct Node **root, int key) {
+    struct Node *r = *root;
+
+    if (r->n == 3) {
+        struct Node *newRoot = create(0);
+        newRoot->child[0] = r;
+
+        split(newRoot, 0);
+
+        int i = key > newRoot->key[0];
+        insertNonFull(newRoot->child[i], key);
+
+        *root = newRoot;
+    } else {
+        insertNonFull(r, key);
+    }
+}
+
+struct Node* search(struct Node *root, int key) {
+    int i = 0;
+
+    while (i < root->n && key > root->key[i])
+        i++;
+
+    if (i < root->n && key == root->key[i])
+        return root;
+
+    if (root->leaf)
+        return NULL;
+
+    return search(root->child[i], key);
+}
+
+int main() {
+    int a[] = {15,8,25,5,12,20,30,10};
+    struct Node *root = create(1);
+
+    for (int i = 0; i < 8; i++)
+        insert(&root, a[i]);
+
+    printf("B-Tree: ");
+    traverse(root);
+
+    printf("\n12: %s", search(root, 12) ? "Found" : "Not Found");
+    printf("\n18: %s", search(root, 18) ? "Found" : "Not Found");
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 9
+Represent the graph using an adjacency matrix.
+Edges: A-B, A-C, B-D, B-E, C-F, E-F.
+Implement BFS starting from A.
+============================================================
+
+#include <stdio.h>
+
+#define N 6
+
+int graph[N][N] = {
+    {0,1,1,0,0,0},
+    {1,0,0,1,1,0},
+    {1,0,0,0,0,1},
+    {0,1,0,0,0,0},
+    {0,1,0,0,0,1},
+    {0,0,1,0,1,0}
+};
+
+void bfs(int start) {
+    int queue[N];
+    int visited[N] = {0};
+    int front = 0, rear = 0;
+
+    queue[rear++] = start;
+    visited[start] = 1;
+
+    while (front < rear) {
+        int v = queue[front++];
+
+        printf("%c ", v + 'A');
+
+        for (int i = 0; i < N; i++) {
+            if (graph[v][i] && !visited[i]) {
+                visited[i] = 1;
+                queue[rear++] = i;
+            }
+        }
+    }
+}
+
+int main() {
+    printf("BFS: ");
+    bfs(0);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 10
+Represent the graph using an adjacency list.
+Edges: 1-2, 1-3, 2-4, 2-5, 3-6, 5-6.
+Implement DFS starting from 1.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int vertex;
+    struct Node *next;
+};
+
+struct Node *graph[7];
+
+void addEdge(int u, int v) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->vertex = v;
+    n->next = graph[u];
+    graph[u] = n;
+}
+
+void dfs(int v, int visited[]) {
+    visited[v] = 1;
+    printf("%d ", v);
+
+    struct Node *temp = graph[v];
+
+    while (temp) {
+        if (!visited[temp->vertex])
+            dfs(temp->vertex, visited);
+
+        temp = temp->next;
+    }
+}
+
+int main() {
+    addEdge(1,2);
+    addEdge(1,3);
+    addEdge(2,4);
+    addEdge(2,5);
+    addEdge(3,6);
+    addEdge(5,6);
+
+    int visited[7] = {0};
+
+    printf("DFS: ");
+    dfs(1, visited);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 11
+Construct an AVL tree by inserting a sequence of integers.
+Automatically identify LL, RR, LR and RL rotations.
+Display the tree after every rotation.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data, height;
+    struct Node *left, *right;
+};
+
+int height(struct Node *n) {
+    return n ? n->height : 0;
+}
+
+int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->height = 1;
+    n->left = n->right = NULL;
+    return n;
+}
+
+int balance(struct Node *n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+struct Node* rightRotate(struct Node *y) {
+    struct Node *x = y->left;
+    struct Node *t = x->right;
+
+    x->right = y;
+    y->left = t;
+
+    y->height = 1 + max(height(y->left), height(y->right));
+    x->height = 1 + max(height(x->left), height(x->right));
+
+    printf("\nLL Rotation: ");
+    inorder(x);
+
+    return x;
+}
+
+struct Node* leftRotate(struct Node *x) {
+    struct Node *y = x->right;
+    struct Node *t = y->left;
+
+    y->left = x;
+    x->right = t;
+
+    x->height = 1 + max(height(x->left), height(x->right));
+    y->height = 1 + max(height(y->left), height(y->right));
+
+    printf("\nRR Rotation: ");
+    inorder(y);
+
+    return y;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+    else
+        return root;
+
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int b = balance(root);
+
+    if (b > 1 && data < root->left->data) {
+        printf("\nLL case at %d", root->data);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && data > root->right->data) {
+        printf("\nRR case at %d", root->data);
+        return leftRotate(root);
+    }
+
+    if (b > 1 && data > root->left->data) {
+        printf("\nLR case at %d", root->data);
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && data < root->right->data) {
+        printf("\nRL case at %d", root->data);
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+int main() {
+    int a[] = {30,20,10,25,28,27};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 6; i++) {
+        root = insert(root, a[i]);
+        printf("\nAfter %d: ", a[i]);
+        inorder(root);
+    }
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 12
+Construct a B-Tree of a given order.
+Display the B-Tree after each insertion and show node splitting.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define T 2
+
+struct Node {
+    int key[3];
+    struct Node *child[4];
+    int n, leaf;
+};
+
+struct Node* create(int leaf) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->n = 0;
+    n->leaf = leaf;
+    return n;
+}
+
+void traverse(struct Node *root) {
+    int i;
+
+    for (i = 0; i < root->n; i++) {
+        if (!root->leaf)
+            traverse(root->child[i]);
+        printf("%d ", root->key[i]);
+    }
+
+    if (!root->leaf)
+        traverse(root->child[i]);
+}
+
+void split(struct Node *parent, int pos) {
+    struct Node *full = parent->child[pos];
+    struct Node *right = create(full->leaf);
+
+    printf("\nNode split occurred.");
+
+    right->n = 1;
+    right->key[0] = full->key[2];
+
+    if (!full->leaf) {
+        right->child[0] = full->child[2];
+        right->child[1] = full->child[3];
+    }
+
+    full->n = 1;
+
+    for (int i = parent->n; i >= pos + 1; i--)
+        parent->child[i + 1] = parent->child[i];
+
+    parent->child[pos + 1] = right;
+
+    for (int i = parent->n - 1; i >= pos; i--)
+        parent->key[i + 1] = parent->key[i];
+
+    parent->key[pos] = full->key[1];
+    parent->n++;
+}
+
+void insertNonFull(struct Node *root, int key) {
+    int i = root->n - 1;
+
+    if (root->leaf) {
+        while (i >= 0 && key < root->key[i]) {
+            root->key[i + 1] = root->key[i];
+            i--;
+        }
+
+        root->key[i + 1] = key;
+        root->n++;
+    } else {
+        while (i >= 0 && key < root->key[i])
+            i--;
+
+        i++;
+
+        if (root->child[i]->n == 3) {
+            split(root, i);
+
+            if (key > root->key[i])
+                i++;
+        }
+
+        insertNonFull(root->child[i], key);
+    }
+}
+
+void insert(struct Node **root, int key) {
+    struct Node *r = *root;
+
+    if (r->n == 3) {
+        struct Node *newRoot = create(0);
+        newRoot->child[0] = r;
+
+        split(newRoot, 0);
+
+        int i = key > newRoot->key[0];
+        insertNonFull(newRoot->child[i], key);
+
+        *root = newRoot;
+    } else {
+        insertNonFull(r, key);
+    }
+}
+
+int main() {
+    int a[] = {10,20,5,6,12,30,7,17};
+    int n = 8;
+    struct Node *root = create(1);
+
+    for (int i = 0; i < n; i++) {
+        printf("\n\nInserting %d", a[i]);
+        insert(&root, a[i]);
+
+        printf("\nB-Tree: ");
+        traverse(root);
+    }
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 13
+Use DFS to identify the number of connected components in
+an undirected graph and display the vertices in each component.
+============================================================
+
+#include <stdio.h>
+
+#define N 7
+
+int graph[N][N] = {
+    {0,1,1,0,0,0,0},
+    {1,0,0,1,0,0,0},
+    {1,0,0,0,0,0,0},
+    {0,1,0,0,1,0,0},
+    {0,0,0,1,0,0,0},
+    {0,0,0,0,0,0,1},
+    {0,0,0,0,0,1,0}
+};
+
+void dfs(int v, int visited[]) {
+    visited[v] = 1;
+    printf("%d ", v);
+
+    for (int i = 0; i < N; i++) {
+        if (graph[v][i] && !visited[i])
+            dfs(i, visited);
+    }
+}
+
+int main() {
+    int visited[N] = {0};
+    int components = 0;
+
+    for (int i = 0; i < N; i++) {
+        if (!visited[i]) {
+            components++;
+            printf("\nComponent %d: ", components);
+            dfs(i, visited);
+        }
+    }
+
+    printf("\nTotal Components = %d", components);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 14
+Use a BST to store student roll numbers.
+Implement insertion, deletion, searching, inorder traversal,
+tree height and leaf count.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int roll;
+    struct Node *left, *right;
+};
+
+struct Node* create(int roll) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->roll = roll;
+    n->left = n->right = NULL;
+    return n;
+}
+
+struct Node* insert(struct Node *root, int roll) {
+    if (!root)
+        return create(roll);
+
+    if (roll < root->roll)
+        root->left = insert(root->left, roll);
+    else if (roll > root->roll)
+        root->right = insert(root->right, roll);
+
+    return root;
+}
+
+struct Node* search(struct Node *root, int roll) {
+    if (!root || root->roll == roll)
+        return root;
+
+    if (roll < root->roll)
+        return search(root->left, roll);
+
+    return search(root->right, roll);
+}
+
+struct Node* minNode(struct Node *root) {
+    while (root->left)
+        root = root->left;
+    return root;
+}
+
+struct Node* deleteNode(struct Node *root, int roll) {
+    if (!root)
+        return NULL;
+
+    if (roll < root->roll)
+        root->left = deleteNode(root->left, roll);
+    else if (roll > root->roll)
+        root->right = deleteNode(root->right, roll);
+    else {
+        if (!root->left) {
+            struct Node *t = root->right;
+            free(root);
+            return t;
+        }
+
+        if (!root->right) {
+            struct Node *t = root->left;
+            free(root);
+            return t;
+        }
+
+        struct Node *t = minNode(root->right);
+        root->roll = t->roll;
+        root->right = deleteNode(root->right, t->roll);
+    }
+
+    return root;
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->roll);
+        inorder(root->right);
+    }
+}
+
+int height(struct Node *root) {
+    if (!root)
+        return 0;
+
+    int l = height(root->left);
+    int r = height(root->right);
+
+    return 1 + (l > r ? l : r);
+}
+
+int leafCount(struct Node *root) {
+    if (!root)
+        return 0;
+
+    if (!root->left && !root->right)
+        return 1;
+
+    return leafCount(root->left) + leafCount(root->right);
+}
+
+int main() {
+    int a[] = {45,25,65,15,35,55,75};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 7; i++)
+        root = insert(root, a[i]);
+
+    printf("Students: ");
+    inorder(root);
+
+    printf("\nHeight: %d", height(root));
+    printf("\nLeaf Count: %d", leafCount(root));
+    printf("\nSearch 35: %s", search(root, 35) ? "Found" : "Not Found");
+
+    root = deleteNode(root, 25);
+
+    printf("\nAfter deleting 25: ");
+    inorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 15
+Build a student record system using an AVL tree.
+Support insertion, deletion, searching and traversal.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int roll, height;
+    struct Node *left, *right;
+};
+
+int height(struct Node *n) {
+    return n ? n->height : 0;
+}
+
+int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+struct Node* create(int roll) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->roll = roll;
+    n->height = 1;
+    n->left = n->right = NULL;
+    return n;
+}
+
+int balance(struct Node *n) {
+    return n ? height(n->left) - height(n->right) : 0;
+}
+
+struct Node* rightRotate(struct Node *y) {
+    struct Node *x = y->left;
+    struct Node *t = x->right;
+
+    x->right = y;
+    y->left = t;
+
+    y->height = 1 + max(height(y->left), height(y->right));
+    x->height = 1 + max(height(x->left), height(x->right));
+
+    return x;
+}
+
+struct Node* leftRotate(struct Node *x) {
+    struct Node *y = x->right;
+    struct Node *t = y->left;
+
+    y->left = x;
+    x->right = t;
+
+    x->height = 1 + max(height(x->left), height(x->right));
+    y->height = 1 + max(height(y->left), height(y->right));
+
+    return y;
+}
+
+struct Node* insert(struct Node *root, int roll) {
+    if (!root)
+        return create(roll);
+
+    if (roll < root->roll)
+        root->left = insert(root->left, roll);
+    else if (roll > root->roll)
+        root->right = insert(root->right, roll);
+    else
+        return root;
+
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int b = balance(root);
+
+    if (b > 1 && roll < root->left->roll)
+        return rightRotate(root);
+
+    if (b < -1 && roll > root->right->roll)
+        return leftRotate(root);
+
+    if (b > 1 && roll > root->left->roll) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && roll < root->right->roll) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+struct Node* search(struct Node *root, int roll) {
+    if (!root || root->roll == roll)
+        return root;
+
+    if (roll < root->roll)
+        return search(root->left, roll);
+
+    return search(root->right, roll);
+}
+
+struct Node* minNode(struct Node *root) {
+    while (root->left)
+        root = root->left;
+    return root;
+}
+
+struct Node* deleteNode(struct Node *root, int roll) {
+    if (!root)
+        return NULL;
+
+    if (roll < root->roll)
+        root->left = deleteNode(root->left, roll);
+    else if (roll > root->roll)
+        root->right = deleteNode(root->right, roll);
+    else {
+        if (!root->left || !root->right) {
+            struct Node *t = root->left ? root->left : root->right;
+
+            if (!t) {
+                free(root);
+                return NULL;
+            }
+
+            *root = *t;
+            free(t);
+        } else {
+            struct Node *t = minNode(root->right);
+            root->roll = t->roll;
+            root->right = deleteNode(root->right, t->roll);
+        }
+    }
+
+    root->height = 1 + max(height(root->left), height(root->right));
+
+    int b = balance(root);
+
+    if (b > 1 && balance(root->left) >= 0)
+        return rightRotate(root);
+
+    if (b > 1 && balance(root->left) < 0) {
+        root->left = leftRotate(root->left);
+        return rightRotate(root);
+    }
+
+    if (b < -1 && balance(root->right) <= 0)
+        return leftRotate(root);
+
+    if (b < -1 && balance(root->right) > 0) {
+        root->right = rightRotate(root->right);
+        return leftRotate(root);
+    }
+
+    return root;
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->roll);
+        inorder(root->right);
+    }
+}
+
+int main() {
+    int a[] = {50,40,30,20,10};
+    struct Node *root = NULL;
+
+    for (int i = 0; i < 5; i++)
+        root = insert(root, a[i]);
+
+    printf("Inorder: ");
+    inorder(root);
+
+    printf("\nSearch 30: %s",
+           search(root, 30) ? "Found" : "Not Found");
+
+    root = deleteNode(root, 30);
+
+    printf("\nAfter deleting 30: ");
+    inorder(root);
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 16
+Insert the same elements into a BST in two different orders.
+Compare tree heights and explain the effect of insertion order.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+struct Node* insert(struct Node *root, int data) {
+    if (!root)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else
+        root->right = insert(root->right, data);
+
+    return root;
+}
+
+int height(struct Node *root) {
+    if (!root)
+        return 0;
+
+    int l = height(root->left);
+    int r = height(root->right);
+
+    return 1 + (l > r ? l : r);
+}
+
+int main() {
+    int a[] = {10,20,30,40,50};
+    int b[] = {30,10,40,20,50};
+
+    struct Node *root1 = NULL;
+    struct Node *root2 = NULL;
+
+    for (int i = 0; i < 5; i++) {
+        root1 = insert(root1, a[i]);
+        root2 = insert(root2, b[i]);
+    }
+
+    printf("Height of Tree 1: %d\n", height(root1));
+    printf("Height of Tree 2: %d\n", height(root2));
+
+    return 0;
+}
+
+
+============================================================
+QUESTION 17
+Given a binary tree, perform inorder, preorder and postorder
+traversals. Determine height, leaf nodes and internal nodes.
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Node {
+    int data;
+    struct Node *left, *right;
+};
+
+struct Node* create(int data) {
+    struct Node *n = malloc(sizeof(struct Node));
+    n->data = data;
+    n->left = n->right = NULL;
+    return n;
+}
+
+void preorder(struct Node *root) {
+    if (root) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+void inorder(struct Node *root) {
+    if (root) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+void postorder(struct Node *root) {
+    if (root) {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+
+int height(struct Node *root) {
+    if (!root)
+        return 0;
+
+    int l = height(root->left);
+    int r = height(root->right);
+
+    return 1 + (l > r ? l : r);
+}
+
+int leafCount(struct Node *root) {
+    if (!root)
+        return 0;
+
+    if (!root->left && !root->right)
+        return 1;
+
+    return leafCount(root->left) + leafCount(root->right);
+}
+
+int internalCount(struct Node *root) {
+    if (!root || (!root->left && !root->right))
+        return 0;
+
+    return 1 + internalCount(root->left) +
+           internalCount(root->right);
+}
+
+int main() {
+    struct Node *root = create(50);
+
+    root->left = create(30);
+    root->right = create(70);
+    root->left->left = create(20);
+    root->left->right = create(40);
+    root->right->left = create(60);
+    root->right->right = create(80);
+
+    printf("Preorder: ");
+    preorder(root);
+
+    printf("\nInorder: ");
+    inorder(root);
+
+    printf("\nPostorder: ");
+    postorder(root);
+
+    printf("\nHeight: %d", height(root));
+    printf("\nLeaf Nodes: %d", leafCount(root));
+    printf("\nInternal Nodes: %d", internalCount(root));
+
+    return 0;
+}
