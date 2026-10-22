@@ -1,0 +1,537 @@
+U23EC301 SIGNALS AND SYSTEMS LAB
+MATLAB PROGRAMS — LAB TEST PREPARATION
+Based on the Signals and Systems Lab Manual and the preparation notes.
+
+IMPORTANT
+- Save each experiment in a separate .m file when running in MATLAB.
+- Run each code block separately.
+- Some commands require the Symbolic Math Toolbox or Signal Processing Toolbox.
+- For discrete-time signals use integer n and stem(). For continuous-style plots use t and plot().
+
+============================================================
+EXPERIMENT 1: BASIC PLOTTING OF SIGNALS
+============================================================
+
+% 1A. Continuous-time-style impulse, step, exponential, ramp and sine
+clc;
+clear;
+close all;
+
+t = -2:0.01:10;
+
+impulse = (t == 0);
+figure;
+plot(t, impulse);
+xlabel('Time'); ylabel('Amplitude'); title('Impulse Function'); grid on;
+
+unitstep = (t >= 0);
+figure;
+plot(t, unitstep);
+xlabel('Time'); ylabel('Amplitude'); title('Unit Step Function'); grid on;
+
+t = 0:0.01:5;
+growing_exp = exp(t);
+figure;
+plot(t, growing_exp);
+xlabel('Time'); ylabel('Amplitude'); title('Growing Exponential'); grid on;
+
+decaying_exp = exp(-t);
+figure;
+plot(t, decaying_exp);
+xlabel('Time'); ylabel('Amplitude'); title('Decaying Exponential'); grid on;
+
+ramp = t .* (t >= 0);
+figure;
+plot(t, ramp);
+xlabel('Time'); ylabel('Amplitude'); title('Ramp Function'); grid on;
+
+t = 0:0.01:2*pi;
+sine_signal = sin(t);
+figure;
+plot(t, sine_signal);
+xlabel('Time'); ylabel('Amplitude'); title('Sine Signal'); grid on;
+
+
+% 1B. Discrete-time impulse, step, exponential, ramp and sine
+clc;
+clear;
+close all;
+
+n = -2:10;
+
+impulse = (n == 0);
+figure;
+stem(n, impulse);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Impulse'); grid on;
+
+unitstep = (n >= 0);
+figure;
+stem(n, unitstep);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Unit Step'); grid on;
+
+n = 0:10;
+growing_exp = exp(n);
+figure;
+stem(n, growing_exp);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Growing Exponential'); grid on;
+
+decaying_exp = exp(-n);
+figure;
+stem(n, decaying_exp);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Decaying Exponential'); grid on;
+
+ramp = n .* (n >= 0);
+figure;
+stem(n, ramp);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Ramp'); grid on;
+
+n = 0:10;
+sine_signal = sin(pi*n/5);
+figure;
+stem(n, sine_signal);
+xlabel('n'); ylabel('Amplitude'); title('Discrete Sine Signal'); grid on;
+
+
+% 1C. 2-D plot
+clc;
+clear;
+close all;
+
+x = 0:pi/10:2*pi;
+y = sin(x);
+plot(x, y);
+grid on;
+xlabel('x'); ylabel('sin(x)'); title('2-D Plot');
+
+
+% 1D. 3-D plot
+clc;
+clear;
+close all;
+
+t = -4:0.01:4;
+x = t.^2;
+y = 4*t;
+plot3(x, y, t);
+grid on;
+xlabel('x-axis'); ylabel('y-axis'); zlabel('z-axis');
+title('3-D Plot');
+
+
+============================================================
+EXPERIMENT 2: AMPLITUDE SCALING, TIME SHIFTING AND TIME SCALING
+============================================================
+
+% 2A. Amplitude scaling
+clc;
+clear;
+close all;
+
+t = -3:0.01:7;
+x = (t >= 0);
+y = 3*x;
+
+plot(t, x, t, y);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Amplitude Scaling of Step');
+legend('Original', 'Scaled');
+
+% Ramp amplitude scaling
+ramp = t .* (t >= 0);
+scaled_ramp = 2*ramp;
+figure;
+plot(t, ramp, t, scaled_ramp);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Amplitude Scaling of Ramp');
+legend('Original', 'Scaled');
+
+
+% 2B. Time shifting
+clc;
+clear;
+close all;
+
+t = -5:0.01:10;
+x = (t >= 0);
+delayed = (t >= 3);  % u(t-3)
+advanced = (t >= -2); % u(t+2)
+
+plot(t, x, t, delayed, t, advanced);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Time Shifting of Unit Step');
+legend('Original u(t)', 'Delayed u(t-3)', 'Advanced u(t+2)');
+
+
+% 2C. Time scaling of triangular signal
+clc;
+clear;
+close all;
+
+t = -3:0.01:3;
+x = max(1 - abs(t), 0);
+compressed = max(1 - abs(2*t), 0); % x(2t)
+expanded = max(1 - abs(t/2), 0);   % x(t/2)
+
+plot(t, x, t, compressed, t, expanded);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Time Scaling');
+legend('Original', 'Compressed x(2t)', 'Expanded x(t/2)');
+
+
+============================================================
+EXPERIMENT 3: LINEAR CONVOLUTION
+============================================================
+
+clc;
+clear;
+close all;
+
+x = [1 2 3];
+h = [1 1];
+
+y = conv(x, h);
+
+disp('Linear convolution result:');
+disp(y);
+
+n = 0:length(y)-1;
+subplot(3,1,1);
+stem(0:length(x)-1, x);
+xlabel('n'); ylabel('x[n]'); title('Input x[n]'); grid on;
+
+subplot(3,1,2);
+stem(0:length(h)-1, h);
+xlabel('n'); ylabel('h[n]'); title('Sequence h[n]'); grid on;
+
+subplot(3,1,3);
+stem(n, y);
+xlabel('n'); ylabel('y[n]'); title('Convolution Output'); grid on;
+
+% Expected result for x=[1 2 3], h=[1 1]: [1 3 5 3]
+
+
+============================================================
+EXPERIMENT 4: IMPULSE RESPONSE AND STEP RESPONSE
+============================================================
+
+% 4A. Step response from known impulse response h[n]=(0.5)^n u[n]
+clc;
+clear;
+close all;
+
+N = 50;
+n = 0:N-1;
+h = 0.5.^n;
+x = ones(1, N);
+
+y = conv(x, h);
+y = y(1:N);
+
+stem(n, y);
+xlabel('n'); ylabel('Amplitude'); title('Step Response'); grid on;
+
+
+% 4B. Impulse response for h[n]=(0.5)^n u[n]
+clc;
+clear;
+close all;
+
+N = 50;
+n = 0:N-1;
+delta = [1 zeros(1, N-1)];
+h = 0.5.^n;
+
+y = conv(delta, h);
+y = y(1:N);
+
+stem(n, y);
+xlabel('n'); ylabel('Amplitude'); title('Impulse Response'); grid on;
+
+
+% 4C. Response from difference equation y[n]-0.5y[n-1]=x[n]
+clc;
+clear;
+close all;
+
+N = 20;
+n = 0:N-1;
+b = 1;
+a = [1 -0.5];
+
+x_step = ones(1, N);
+y_step = filter(b, a, x_step);
+
+figure;
+stem(n, y_step);
+xlabel('n'); ylabel('Amplitude'); title('Step Response from Difference Equation'); grid on;
+
+x_impulse = [1 zeros(1, N-1)];
+y_impulse = filter(b, a, x_impulse);
+
+figure;
+stem(n, y_impulse);
+xlabel('n'); ylabel('Amplitude'); title('Impulse Response from Difference Equation'); grid on;
+
+
+============================================================
+EXPERIMENT 5: FOURIER SERIES AND GIBBS PHENOMENON
+============================================================
+
+% 5A. Square wave approximation using first 10 odd harmonics
+clc;
+clear;
+close all;
+
+t = linspace(-2*pi, 2*pi, 1000);
+N = 10;
+x = zeros(size(t));
+
+for k = 1:N
+    m = 2*k - 1;
+    x = x + (4/(m*pi))*sin(m*t);
+end
+
+plot(t, x, 'LineWidth', 1.5);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Square Wave Fourier Series - 10 Terms');
+
+
+% 5B. Square wave approximation using first 50 odd harmonics
+clc;
+clear;
+close all;
+
+t = linspace(-2*pi, 2*pi, 1000);
+N = 50;
+x = zeros(size(t));
+
+for k = 1:N
+    m = 2*k - 1;
+    x = x + (4/(m*pi))*sin(m*t);
+end
+
+plot(t, x, 'LineWidth', 1.5);
+grid on;
+xlabel('Time'); ylabel('Amplitude');
+title('Square Wave Fourier Series - 50 Terms');
+
+
+============================================================
+EXPERIMENT 6: FOURIER TRANSFORM
+============================================================
+
+% Requires Symbolic Math Toolbox
+clc;
+clear;
+close all;
+
+syms t w;
+x = exp(-2*t^2);
+X = fourier(x, t, w);
+
+disp('Fourier transform:');
+disp(X);
+
+figure;
+fplot(x, [-2 2]);
+grid on;
+xlabel('Time'); ylabel('x(t)'); title('Original Signal');
+
+figure;
+fplot(X, [-5 5]);
+grid on;
+xlabel('Angular Frequency'); ylabel('X(w)');
+title('Fourier Transform');
+
+
+============================================================
+EXPERIMENT 7: Z-TRANSFORM AND INVERSE Z-TRANSFORM
+============================================================
+
+% 7A. Z-transform of (1/4)^n u[n] (causal sequence convention)
+% Requires Symbolic Math Toolbox
+clc;
+clear;
+close all;
+
+syms n z;
+x = (1/4)^n;
+X = ztrans(x, n, z);
+
+disp('Z-transform:');
+disp(X);
+
+
+% 7B. Inverse Z-transform of X(z)=2z/(2z-1)
+% Requires Symbolic Math Toolbox
+clc;
+clear;
+close all;
+
+syms z n;
+X = 2*z/(2*z - 1);
+x = iztrans(X, z, n);
+
+disp('Inverse Z-transform:');
+disp(x);
+
+
+============================================================
+EXPERIMENT 8: POLE-ZERO DIAGRAM
+============================================================
+
+% Example H(z)=(z+0.5)/(z^2-0.8z+0.15)
+% Coefficients are written in descending powers of z.
+clc;
+clear;
+close all;
+
+num = [1 0.5];
+den = [1 -0.8 0.15];
+
+z_values = roots(num);
+p_values = roots(den);
+
+disp('Zeros:');
+disp(z_values);
+disp('Poles:');
+disp(p_values);
+
+theta = linspace(0, 2*pi, 300);
+unit_circle_x = cos(theta);
+unit_circle_y = sin(theta);
+
+figure;
+plot(real(z_values), imag(z_values), 'ob', 'MarkerSize', 8);
+hold on;
+plot(real(p_values), imag(p_values), 'xr', 'MarkerSize', 8);
+plot(unit_circle_x, unit_circle_y, 'k--');
+grid on;
+axis equal;
+xlabel('Real Part'); ylabel('Imaginary Part');
+title('Pole-Zero Diagram');
+legend('Zeros', 'Poles', 'Unit Circle');
+hold off;
+
+% ROC is determined by pole locations AND whether the sequence is causal,
+% anti-causal or two-sided. The unit circle alone is not the ROC.
+
+
+============================================================
+EXPERIMENT 9: MAGNITUDE AND PHASE
+============================================================
+
+% 9A. Magnitude and phase spectrum of a signal using FFT
+clc;
+clear;
+close all;
+
+Fs = 100;
+t = 0:1/Fs:10-1/Fs;
+x = sin(2*pi*15*t) + sin(2*pi*40*t);
+
+X = fft(x);
+N = length(X);
+magnitude = abs(X);
+phase = unwrap(angle(X));
+f = (0:N-1)*Fs/N;
+
+subplot(2,1,1);
+plot(f, magnitude);
+ylabel('Magnitude');
+xlabel('Frequency (Hz)');
+title('Magnitude Spectrum');
+grid on;
+
+subplot(2,1,2);
+plot(f, phase*180/pi);
+ylabel('Phase (Degrees)');
+xlabel('Frequency (Hz)');
+title('Phase Spectrum');
+grid on;
+
+
+% 9B. Magnitude and phase frequency response of a digital system
+% Requires Signal Processing Toolbox
+clc;
+clear;
+close all;
+
+b = [1 0.5];
+a = [1 -0.8 0.15];
+
+[H, w] = freqz(b, a, 1024);
+
+subplot(2,1,1);
+plot(w/pi, abs(H));
+ylabel('Magnitude');
+xlabel('Normalized Frequency (x pi rad/sample)');
+title('Magnitude Response');
+grid on;
+
+subplot(2,1,2);
+plot(w/pi, unwrap(angle(H))*180/pi);
+ylabel('Phase (Degrees)');
+xlabel('Normalized Frequency (x pi rad/sample)');
+title('Phase Response');
+grid on;
+
+
+============================================================
+EXPERIMENT 10: SIMULINK — AMPLIFICATION AND LINEARITY
+============================================================
+
+% 10A. Amplify a sine wave by a factor of 2 using Simulink
+% This is a block-diagram experiment, not a MATLAB script.
+% Create and connect:
+% Sine Wave --> Gain --> Scope
+% Set Gain = 2, then run the model.
+% If input x(t)=sin(t), output y(t)=2*sin(t).
+
+
+% 10B. Check linearity using superposition
+% A gain system T(x)=2x is linear:
+% T(x1+x2) = 2*(x1+x2) = 2*x1 + 2*x2 = T(x1)+T(x2).
+%
+% In Simulink, create two input branches:
+% x1 and x2 --> Sum --> Gain(2) --> Scope  [T(x1+x2)]
+% x1 --> Gain(2) --------------------------\
+%                                           Sum --> Scope [T(x1)+T(x2)]
+% x2 --> Gain(2) --------------------------/
+%
+% Compare the two outputs. They should match for a linear system.
+%
+% Example of a nonlinear system: T(x)=x^2, which generally does not
+% satisfy T(x1+x2)=T(x1)+T(x2).
+
+
+============================================================
+QUICK COMMAND REVISION
+============================================================
+
+clc          % Clear Command Window
+clear        % Clear variables
+close all    % Close figures
+plot(t,x)    % Continuous-style plot
+stem(n,x)    % Discrete-time plot
+plot3(x,y,z) % 3-D plot
+subplot(r,c,k) % Divide figure into subplots
+hold on      % Add another plot to current axes
+grid on      % Display grid
+conv(x,h)    % Linear convolution
+filter(b,a,x) % Digital system response
+fourier(x,t,w) % Symbolic Fourier transform
+ztrans(x,n,z)  % Z-transform
+iztrans(X,z,n) % Inverse Z-transform
+roots(p)     % Polynomial roots
+fft(x)       % Discrete Fourier transform
+abs(X)       % Magnitude
+angle(X)     % Phase in radians
+freqz(b,a)   % Digital system frequency response
+
+END OF FILE
