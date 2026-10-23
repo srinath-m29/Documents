@@ -1,0 +1,672 @@
+============================================================
+Experiment 7: Implementation of Prim's Algorithm
+============================================================
+
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 20
+
+int graph[MAX][MAX];    // adjacency matrix (0 means no edge)
+int visited[MAX];       // 1 if the vertex is already in the MST
+int n;
+
+int main()
+{
+    int e, i, j, u, v, w;
+    char a, b;
+    int min, total = 0, edges = 0;
+    int from, to;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    for (i = 0; i < n; i++)
+        for (j = 0; j < n; j++)
+            graph[i][j] = 0;
+
+    printf("Enter edges (u v weight):\n");
+    for (i = 0; i < e; i++)
+    {
+        scanf(" %c %c %d", &a, &b, &w);
+        u = a - 'A';            // convert letter to index (A = 0)
+        v = b - 'A';
+        graph[u][v] = w;        // undirected graph, so store both sides
+        graph[v][u] = w;
+    }
+
+    visited[0] = 1;             // start from vertex A
+
+    printf("\nEdges in the Minimum Spanning Tree:\n");
+    while (edges < n - 1)       // MST has n - 1 edges
+    {
+        min = INT_MAX;
+        from = -1;
+        to = -1;
+
+        // find the smallest edge from a visited vertex to an unvisited vertex
+        for (i = 0; i < n; i++)
+        {
+            if (visited[i])
+            {
+                for (j = 0; j < n; j++)
+                {
+                    if (!visited[j] && graph[i][j] != 0 && graph[i][j] < min)
+                    {
+                        min = graph[i][j];
+                        from = i;
+                        to = j;
+                    }
+                }
+            }
+        }
+
+        if (to == -1)           // no edge found, graph is disconnected
+        {
+            printf("Graph is not connected.\n");
+            return 0;
+        }
+
+        visited[to] = 1;        // add the new vertex to the MST
+        printf("%c - %c : %d\n", 'A' + from, 'A' + to, min);
+        total += min;
+        edges++;
+    }
+
+    printf("\nTotal weight of MST = %d\n", total);
+    return 0;
+}
+
+
+============================================================
+Experiment 8: Implementation of Kruskal's Algorithm
+============================================================
+
+#include <stdio.h>
+
+#define MAX 50
+
+struct Edge
+{
+    int u, v, w;
+};
+
+struct Edge edge[MAX];
+int parent[MAX];        // parent[i] is the leader of the set containing i
+
+// Find the leader (root) of the set containing x
+int find(int x)
+{
+    while (parent[x] != x)
+        x = parent[x];
+    return x;
+}
+
+// Join the sets of a and b
+void unionSet(int a, int b)
+{
+    parent[find(a)] = find(b);
+}
+
+int main()
+{
+    int n, e, i, j;
+    int count = 0, total = 0;
+    char a, b;
+    struct Edge temp;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    printf("Enter number of edges: ");
+    scanf("%d", &e);
+
+    printf("Enter edges (u v weight):\n");
+    for (i = 0; i < e; i++)
+    {
+        scanf(" %c %c %d", &a, &b, &edge[i].w);
+        edge[i].u = a - 'A';    // convert letter to index (A = 0)
+        edge[i].v = b - 'A';
+    }
+
+    for (i = 0; i < n; i++)
+        parent[i] = i;          // every vertex is in its own set at first
+
+    // Sort edges in increasing order of weight (bubble sort)
+    for (i = 0; i < e - 1; i++)
+    {
+        for (j = 0; j < e - i - 1; j++)
+        {
+            if (edge[j].w > edge[j + 1].w)
+            {
+                temp = edge[j];
+                edge[j] = edge[j + 1];
+                edge[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("\nEdges in the Minimum Spanning Tree:\n");
+    for (i = 0; i < e && count < n - 1; i++)
+    {
+        // different leaders means no cycle, so the edge can be added
+        if (find(edge[i].u) != find(edge[i].v))
+        {
+            unionSet(edge[i].u, edge[i].v);
+            printf("%c - %c : %d\n", 'A' + edge[i].u, 'A' + edge[i].v, edge[i].w);
+            total += edge[i].w;
+            count++;
+        }
+    }
+
+    printf("\nTotal weight of MST = %d\n", total);
+    return 0;
+}
+
+
+============================================================
+Experiment 9: Implementation of Dijkstra's Algorithm
+============================================================
+
+#include <stdio.h>
+
+#define INF 9999
+#define MAX 20
+
+int main()
+{
+    int cost[MAX][MAX], dist[MAX], visited[MAX];
+    int n, i, j, source, count, min, next;
+
+    printf("Enter the number of vertices : ");
+    scanf("%d", &n);
+
+    printf("Enter the cost matrix (enter 0 if there is no edge):\n");
+    for (i = 0; i < n; i++)
+    {
+        for (j = 0; j < n; j++)
+        {
+            scanf("%d", &cost[i][j]);
+            if (cost[i][j] == 0 && i != j)
+                cost[i][j] = INF;
+        }
+    }
+
+    printf("Enter the source vertex : ");
+    scanf("%d", &source);
+
+    for (i = 0; i < n; i++)
+    {
+        dist[i] = cost[source][i];
+        visited[i] = 0;
+    }
+    dist[source] = 0;
+    visited[source] = 1;
+    count = 1;
+
+    while (count < n)
+    {
+        min = INF;
+        next = -1;
+        for (i = 0; i < n; i++)
+        {
+            if (dist[i] < min && visited[i] == 0)
+            {
+                min = dist[i];
+                next = i;
+            }
+        }
+        if (next == -1)
+            break;
+
+        visited[next] = 1;
+        for (i = 0; i < n; i++)
+        {
+            if (visited[i] == 0 && min + cost[next][i] < dist[i])
+            {
+                dist[i] = min + cost[next][i];
+            }
+        }
+        count++;
+    }
+
+    printf("\nShortest distance from vertex %d:\n", source);
+    for (i = 0; i < n; i++)
+    {
+        if (i != source)
+            printf("Distance to vertex %d = %d\n", i, dist[i]);
+    }
+    return 0;
+}
+
+
+============================================================
+Experiment 10: Implementation of Hashing and Collision Resolution Techniques
+============================================================
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define SIZE 10
+
+struct node
+{
+    int key;
+    struct node *next;
+};
+
+int linear[SIZE];
+int quad[SIZE];
+struct node *chain[SIZE];
+
+void insertLinear(int key)
+{
+    int i, index;
+    int h = key % SIZE;
+    for (i = 0; i < SIZE; i++)
+    {
+        index = (h + i) % SIZE;
+        if (linear[index] == -1)
+        {
+            linear[index] = key;
+            return;
+        }
+    }
+    printf("Linear probing : table is full, cannot insert %d\n", key);
+}
+
+void insertQuadratic(int key)
+{
+    int i, index;
+    int h = key % SIZE;
+    for (i = 0; i < SIZE; i++)
+    {
+        index = (h + i * i) % SIZE;
+        if (quad[index] == -1)
+        {
+            quad[index] = key;
+            return;
+        }
+    }
+    printf("Quadratic probing : no free slot found for %d\n", key);
+}
+
+void insertChain(int key)
+{
+    int h = key % SIZE;
+    struct node *newnode, *temp;
+
+    newnode = (struct node *)malloc(sizeof(struct node));
+    newnode->key = key;
+    newnode->next = NULL;
+
+    if (chain[h] == NULL)
+        chain[h] = newnode;
+    else
+    {
+        temp = chain[h];
+        while (temp->next != NULL)
+            temp = temp->next;
+        temp->next = newnode;
+    }
+}
+
+void displayArray(int table[])
+{
+    int i;
+    for (i = 0; i < SIZE; i++)
+    {
+        if (table[i] == -1)
+            printf("  [%d] --\n", i);
+        else
+            printf("  [%d] %d\n", i, table[i]);
+    }
+}
+
+void displayChain()
+{
+    int i;
+    struct node *temp;
+    for (i = 0; i < SIZE; i++)
+    {
+        printf("  [%d]", i);
+        temp = chain[i];
+        while (temp != NULL)
+        {
+            printf(" -> %d", temp->key);
+            temp = temp->next;
+        }
+        printf("\n");
+    }
+}
+
+int main()
+{
+    int n, i, key;
+
+    for (i = 0; i < SIZE; i++)
+    {
+        linear[i] = -1;
+        quad[i] = -1;
+        chain[i] = NULL;
+    }
+
+    printf("Hash function : key %% %d\n", SIZE);
+    printf("Enter the number of keys : ");
+    scanf("%d", &n);
+    printf("Enter the keys : ");
+    for (i = 0; i < n; i++)
+    {
+        scanf("%d", &key);
+        insertLinear(key);
+        insertQuadratic(key);
+        insertChain(key);
+    }
+
+    printf("\nLinear Probing:\n");
+    displayArray(linear);
+    printf("\nQuadratic Probing:\n");
+    displayArray(quad);
+    printf("\nSeparate Chaining:\n");
+    displayChain();
+    return 0;
+}
+
+
+============================================================
+Experiment 11: Implementation of Heap
+============================================================
+
+#include <stdio.h>
+
+#define MAX 50
+
+int heap[MAX];
+int size = 0;
+
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+/* moves the element at position i down to its correct place */
+void heapify(int a[], int n, int i)
+{
+    int largest = i;
+    int left = 2 * i;
+    int right = 2 * i + 1;
+
+    if (left <= n && a[left] > a[largest])
+        largest = left;
+    if (right <= n && a[right] > a[largest])
+        largest = right;
+
+    if (largest != i)
+    {
+        swap(&a[i], &a[largest]);
+        heapify(a, n, largest);
+    }
+}
+
+void insert(int value)
+{
+    int i;
+    if (size == MAX - 1)
+    {
+        printf("Heap is full\n");
+        return;
+    }
+    size++;
+    i = size;
+    heap[i] = value;
+
+    /* move the new element up while it is bigger than its parent */
+    while (i > 1 && heap[i / 2] < heap[i])
+    {
+        swap(&heap[i / 2], &heap[i]);
+        i = i / 2;
+    }
+}
+
+void deleteMax()
+{
+    if (size == 0)
+    {
+        printf("Heap is empty\n");
+        return;
+    }
+    printf("Deleted element : %d\n", heap[1]);
+    heap[1] = heap[size];
+    size--;
+    heapify(heap, size, 1);
+}
+
+void display()
+{
+    int i;
+    if (size == 0)
+    {
+        printf("Heap is empty\n");
+        return;
+    }
+    printf("Max heap : ");
+    for (i = 1; i <= size; i++)
+        printf("%d ", heap[i]);
+    printf("\n");
+}
+
+void heapSort()
+{
+    int temp[MAX], i;
+
+    for (i = 1; i <= size; i++)
+        temp[i] = heap[i];
+
+    for (i = size; i >= 2; i--)
+    {
+        swap(&temp[1], &temp[i]);
+        heapify(temp, i - 1, 1);
+    }
+
+    printf("Sorted order : ");
+    for (i = 1; i <= size; i++)
+        printf("%d ", temp[i]);
+    printf("\n");
+}
+
+int main()
+{
+    int choice, value;
+
+    while (1)
+    {
+        printf("\n1.Insert 2.Delete max 3.Display 4.Heap sort 5.Exit\n");
+        printf("Enter your choice : ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                printf("Enter the value : ");
+                scanf("%d", &value);
+                insert(value);
+                break;
+            case 2:
+                deleteMax();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                heapSort();
+                break;
+            case 5:
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
+
+
+============================================================
+Experiment 12: Implementation of Sorting and Searching Techniques
+============================================================
+
+#include <stdio.h>
+
+#define MAX 50
+
+void display(int a[], int n)
+{
+    int i;
+    for (i = 0; i < n; i++)
+        printf("%d ", a[i]);
+    printf("\n");
+}
+
+void bubbleSort(int a[], int n)
+{
+    int i, j, temp;
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = 0; j < n - i - 1; j++)
+        {
+            if (a[j] > a[j + 1])
+            {
+                temp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void selectionSort(int a[], int n)
+{
+    int i, j, min, temp;
+    for (i = 0; i < n - 1; i++)
+    {
+        min = i;
+        for (j = i + 1; j < n; j++)
+        {
+            if (a[j] < a[min])
+                min = j;
+        }
+        temp = a[i];
+        a[i] = a[min];
+        a[min] = temp;
+    }
+}
+
+void insertionSort(int a[], int n)
+{
+    int i, j, key;
+    for (i = 1; i < n; i++)
+    {
+        key = a[i];
+        j = i - 1;
+        while (j >= 0 && a[j] > key)
+        {
+            a[j + 1] = a[j];
+            j--;
+        }
+        a[j + 1] = key;
+    }
+}
+
+int linearSearch(int a[], int n, int key)
+{
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        if (a[i] == key)
+            return i;
+    }
+    return -1;
+}
+
+int binarySearch(int a[], int n, int key)
+{
+    int low = 0, high = n - 1, mid;
+    while (low <= high)
+    {
+        mid = (low + high) / 2;
+        if (a[mid] == key)
+            return mid;
+        else if (key < a[mid])
+            high = mid - 1;
+        else
+            low = mid + 1;
+    }
+    return -1;
+}
+
+int main()
+{
+    int arr[MAX], temp[MAX];
+    int n, i, choice, key, pos;
+
+    printf("Enter the number of elements : ");
+    scanf("%d", &n);
+    printf("Enter the elements : ");
+    for (i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+
+    while (1)
+    {
+        printf("\n1.Bubble 2.Selection 3.Insertion 4.Linear search 5.Binary search 6.Exit\n");
+        printf("Enter your choice : ");
+        scanf("%d", &choice);
+
+        for (i = 0; i < n; i++)
+            temp[i] = arr[i];
+
+        switch (choice)
+        {
+            case 1:
+                bubbleSort(temp, n);
+                printf("Sorted array : ");
+                display(temp, n);
+                break;
+            case 2:
+                selectionSort(temp, n);
+                printf("Sorted array : ");
+                display(temp, n);
+                break;
+            case 3:
+                insertionSort(temp, n);
+                printf("Sorted array : ");
+                display(temp, n);
+                break;
+            case 4:
+                printf("Enter the element to search : ");
+                scanf("%d", &key);
+                pos = linearSearch(arr, n, key);
+                if (pos == -1)
+                    printf("Element not found\n");
+                else
+                    printf("Element found at position %d\n", pos + 1);
+                break;
+            case 5:
+                bubbleSort(temp, n);
+                printf("Array sorted for binary search : ");
+                display(temp, n);
+                printf("Enter the element to search : ");
+                scanf("%d", &key);
+                pos = binarySearch(temp, n, key);
+                if (pos == -1)
+                    printf("Element not found\n");
+                else
+                    printf("Element found at position %d\n", pos + 1);
+                break;
+            case 6:
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
